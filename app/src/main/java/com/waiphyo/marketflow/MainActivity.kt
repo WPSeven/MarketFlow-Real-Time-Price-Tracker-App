@@ -12,9 +12,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.waiphyo.marketflow.ui.navigation.AppNavigation
 import com.waiphyo.marketflow.ui.theme.PriceTrackerTheme
+import dagger.hilt.android.AndroidEntryPoint
 
-private val NavIconSize = 24.dp
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
