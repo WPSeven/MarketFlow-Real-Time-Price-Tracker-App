@@ -244,14 +244,19 @@ private val PreviewFeedUiState = FeedUiState(
     isFeedRunning = true,
 )
 
+@Composable
+fun FeedHomePreviewContent() {
+    FeedScreenContent(
+        uiState = PreviewFeedUiState,
+        onSymbolClick = {},
+    )
+}
+
 @Preview(showBackground = true, widthDp = 393, heightDp = 852, name = "Feed Screen")
 @Composable
 private fun FeedScreenPreview() {
     PriceTrackerTheme {
-        FeedScreenContent(
-            uiState = PreviewFeedUiState,
-            onSymbolClick = {},
-        )
+        FeedHomePreviewContent()
     }
 }
 
