@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -71,4 +72,63 @@ class FeedViewModelTest {
 
         collectorJob.cancel()
     }
+
+    @Test
+    fun `stocks are sorted by price descending by default`() = runTest(dispatcher) {
+        val repository = FakeStockRepository()
+        val viewModel = FeedViewModel(
+            observeFeedUseCase = ObserveFeedUseCase(repository),
+            toggleFeedUseCase = ToggleFeedUseCase(repository),
+        )
+
+        val collectorJob = launch { viewModel.uiState.collect() }
+
+        repository.stocks.value = listOf(
+            sampleStock(symbol = "A", price = 10.0),
+            sampleStock(symbol = "B", price = 30.0),
+            sampleStock(symbol = "C", price = 20.0),
+        )
+
+        advanceUntilIdle()
+
+        assertEquals(listOf("B", "C", "A"), viewModel.uiState.value.stocks.map { it.symbol })
+        assertEquals(PriceSortOrder.DESC, viewModel.uiState.value.sortOrder)
+
+        collectorJob.cancel()
+    }
+
+    @Test
+    fun `toggleSortOrder switches to ascending and resorts stocks`() = runTest(dispatcher) {
+        val repository = FakeStockRepository()
+        val viewModel = FeedViewModel(
+            observeFeedUseCase = ObserveFeedUseCase(repository),
+            toggleFeedUseCase = ToggleFeedUseCase(repository),
+        )
+
+        val collectorJob = launch { viewModel.uiState.collect() }
+
+        repository.stocks.value = listOf(
+            sampleStock(symbol = "A", price = 10.0),
+            sampleStock(symbol = "B", price = 30.0),
+            sampleStock(symbol = "C", price = 20.0),
+        )
+        advanceUntilIdle()
+
+        viewModel.toggleSortOrder()
+        advanceUntilIdle()
+
+        assertEquals(listOf("A", "C", "B"), viewModel.uiState.value.stocks.map { it.symbol })
+        assertEquals(PriceSortOrder.ASC, viewModel.uiState.value.sortOrder)
+
+        collectorJob.cancel()
+    }
+
+    private fun sampleStock(symbol: String, price: Double): StockSymbol =
+        StockSymbol(
+            symbol = symbol,
+            name = "Name $symbol",
+            price = price,
+            previousPrice = price,
+            description = "Description $symbol",
+        )
 }

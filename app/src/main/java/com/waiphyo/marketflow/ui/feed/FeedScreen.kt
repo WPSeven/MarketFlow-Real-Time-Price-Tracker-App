@@ -15,14 +15,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -56,6 +61,7 @@ fun FeedScreen(
         uiState = uiState,
         onSymbolClick = onSymbolClick,
         onToggleFeed = viewModel::toggleFeed,
+        onToggleSort = viewModel::toggleSortOrder,
     )
 }
 
@@ -65,13 +71,16 @@ private fun FeedScreenContent(
     uiState: FeedUiState,
     onSymbolClick: (String) -> Unit,
     onToggleFeed: () -> Unit,
+    onToggleSort: () -> Unit,
 ) {
     Scaffold(
         topBar = {
             FeedTopBar(
                 isConnected = uiState.isConnected,
                 isFeedRunning = uiState.isFeedRunning,
+                sortOrder = uiState.sortOrder,
                 onToggle = onToggleFeed,
+                onToggleSort = onToggleSort,
             )
         },
     ) { padding ->
@@ -108,7 +117,9 @@ private fun FeedScreenContent(
 private fun FeedTopBar(
     isConnected: Boolean,
     isFeedRunning: Boolean,
+    sortOrder: PriceSortOrder,
     onToggle: () -> Unit,
+    onToggleSort: () -> Unit,
 ) {
     TopAppBar(
         title = {
@@ -128,6 +139,23 @@ private fun FeedTopBar(
             }
         },
         actions = {
+            TextButton(onClick = onToggleSort) {
+                val isDesc = sortOrder == PriceSortOrder.DESC
+                Icon(
+                    imageVector = if (isDesc) Icons.Filled.ArrowDownward else Icons.Filled.ArrowUpward,
+                    contentDescription = if (isDesc) {
+                        "Sorted by price high to low"
+                    } else {
+                        "Sorted by price low to high"
+                    },
+                    modifier = Modifier.size(18.dp),
+                )
+                Text(
+                    text = if (isDesc) "High-Low" else "Low-High",
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.padding(start = 6.dp),
+                )
+            }
             Button(
                 onClick = onToggle,
                 colors = ButtonDefaults.buttonColors(
@@ -243,9 +271,10 @@ private val PreviewFeedUiState = FeedUiState(
                 else -> FlashState.NONE
             },
         )
-    },
+    }.sortedByDescending { it.price },
     isConnected = true,
     isFeedRunning = true,
+    sortOrder = PriceSortOrder.DESC,
 )
 
 @Composable
@@ -254,6 +283,7 @@ fun FeedHomePreviewContent() {
         uiState = PreviewFeedUiState,
         onSymbolClick = {},
         onToggleFeed = {},
+        onToggleSort = {},
     )
 }
 
@@ -273,11 +303,18 @@ private fun FeedScreenEmptyPreview() {
             uiState = FeedUiState(),
             onSymbolClick = {},
             onToggleFeed = {},
+            onToggleSort = {},
         )
     }
 }
 
-@Preview(showBackground = true, widthDp = 393, heightDp = 852, name = "Feed Screen - Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Preview(
+    showBackground = true,
+    widthDp = 393,
+    heightDp = 852,
+    name = "Feed Screen - Dark",
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES,
+)
 @Composable
 private fun FeedScreenDarkPreview() {
     PriceTrackerTheme(darkTheme = true) {
@@ -285,6 +322,7 @@ private fun FeedScreenDarkPreview() {
             uiState = PreviewFeedUiState,
             onSymbolClick = {},
             onToggleFeed = {},
+            onToggleSort = {},
         )
     }
 }

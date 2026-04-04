@@ -14,10 +14,16 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
+enum class PriceSortOrder {
+    DESC,
+    ASC,
+}
+
 data class FeedUiState(
     val stocks: List<StockSymbol> = emptyList(),
     val isConnected: Boolean = false,
     val isFeedRunning: Boolean = false,
+    val sortOrder: PriceSortOrder = PriceSortOrder.DESC,
 )
 
 @HiltViewModel
@@ -27,6 +33,7 @@ class FeedViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val isFeedRunning = MutableStateFlow(false)
+    private val sortOrder = MutableStateFlow(PriceSortOrder.DESC)
     private val feedObservation = observeFeedUseCase()
         .onEach { observation ->
             if (!observation.isConnected) {
@@ -37,11 +44,17 @@ class FeedViewModel @Inject constructor(
     val uiState: StateFlow<FeedUiState> = combine(
         feedObservation,
         isFeedRunning,
-    ) { observation, isRunning ->
+        sortOrder,
+    ) { observation, isRunning, currentSortOrder ->
+        val sortedStocks = when (currentSortOrder) {
+            PriceSortOrder.DESC -> observation.stocks.sortedByDescending { it.price }
+            PriceSortOrder.ASC -> observation.stocks.sortedBy { it.price }
+        }
         FeedUiState(
-            stocks = observation.stocks,
+            stocks = sortedStocks,
             isConnected = observation.isConnected,
             isFeedRunning = isRunning,
+            sortOrder = currentSortOrder,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -51,6 +64,13 @@ class FeedViewModel @Inject constructor(
 
     fun toggleFeed() {
         isFeedRunning.value = toggleFeedUseCase(isFeedRunning.value)
+    }
+
+    fun toggleSortOrder() {
+        sortOrder.value = when (sortOrder.value) {
+            PriceSortOrder.DESC -> PriceSortOrder.ASC
+            PriceSortOrder.ASC -> PriceSortOrder.DESC
+        }
     }
 
     override fun onCleared() {
