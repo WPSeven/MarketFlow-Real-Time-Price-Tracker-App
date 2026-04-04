@@ -1,7 +1,6 @@
 package com.waiphyo.marketflow.ui.navigation
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,7 +32,9 @@ import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
 import com.waiphyo.marketflow.R
+import com.waiphyo.marketflow.ui.account.AccountScreen
 import com.waiphyo.marketflow.ui.detail.DetailScreen
+import com.waiphyo.marketflow.ui.favorites.FavoritesScreen
 import com.waiphyo.marketflow.ui.feed.FeedHomePreviewContent
 import com.waiphyo.marketflow.ui.feed.FeedScreen
 import com.waiphyo.marketflow.ui.theme.PriceTrackerTheme
@@ -83,7 +84,11 @@ private val BottomNavLabelStyle = TextStyle(
  *                       deep link `stocks://symbol/{symbol}`.
  */
 @Composable
-fun AppNavigation(navController: NavHostController) {
+fun AppNavigation(
+    navController: NavHostController,
+    isDarkTheme: Boolean,
+    onThemeChange: (Boolean) -> Unit,
+) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
     val showBottomBar = bottomNavItems.any { it.route == currentRoute }
@@ -123,12 +128,18 @@ fun AppNavigation(navController: NavHostController) {
 
             // ── Favorites ───────
             composable(route = Routes.FAVORITES) {
-                PlaceholderScreen(title = "Favorites", paddingValues = innerPadding)
+                FavoritesScreen(paddingValues = innerPadding)
             }
 
             // ── Account ───────
             composable(route = Routes.ACCOUNT) {
-                PlaceholderScreen(title = "Account", paddingValues = innerPadding)
+                AccountScreen(
+                    userName = "MarketFlow User",
+                    userEmail = "user@marketflow.app",
+                    isDarkTheme = isDarkTheme,
+                    onThemeChange = onThemeChange,
+                    paddingValues = innerPadding,
+                )
             }
 
             // ── Detail ───────
@@ -186,25 +197,6 @@ private fun MarketFlowBottomBar(
                 alwaysShowLabel = true,
             )
         }
-    }
-}
-
-@Composable
-private fun PlaceholderScreen(
-    title: String,
-    paddingValues: PaddingValues,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleLarge,
-        )
     }
 }
 

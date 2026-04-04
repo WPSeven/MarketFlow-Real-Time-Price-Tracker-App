@@ -67,7 +67,7 @@ fun FeedScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FeedScreenContent(
+internal fun FeedScreenContent(
     uiState: FeedUiState,
     onSymbolClick: (String) -> Unit,
     onToggleFeed: () -> Unit,
