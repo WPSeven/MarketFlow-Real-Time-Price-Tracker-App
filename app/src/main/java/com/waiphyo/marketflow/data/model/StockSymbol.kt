@@ -1,4 +1,4 @@
-package com.example.pricetracker.data.model
+package com.waiphyo.marketflow.data.model
 
 /**
  * Represents a single stock symbol with its live price data.

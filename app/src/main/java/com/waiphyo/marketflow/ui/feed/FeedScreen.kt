@@ -37,9 +37,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.pricetracker.data.model.FlashState
-import com.example.pricetracker.data.model.STOCK_CATALOGUE
-import com.example.pricetracker.data.model.StockSymbol
+import com.waiphyo.marketflow.data.model.FlashState
+import com.waiphyo.marketflow.data.model.STOCK_CATALOGUE
+import com.waiphyo.marketflow.data.model.StockSymbol
 import com.waiphyo.marketflow.ui.theme.PriceTrackerTheme
 import java.util.Locale
 
@@ -55,6 +55,7 @@ fun FeedScreen(
     FeedScreenContent(
         uiState = uiState,
         onSymbolClick = onSymbolClick,
+        onToggleFeed = viewModel::toggleFeed,
     )
 }
 
@@ -63,12 +64,14 @@ fun FeedScreen(
 private fun FeedScreenContent(
     uiState: FeedUiState,
     onSymbolClick: (String) -> Unit,
+    onToggleFeed: () -> Unit,
 ) {
     Scaffold(
         topBar = {
             FeedTopBar(
                 isConnected = uiState.isConnected,
                 isFeedRunning = uiState.isFeedRunning,
+                onToggle = onToggleFeed,
             )
         },
     ) { padding ->
@@ -105,6 +108,7 @@ private fun FeedScreenContent(
 private fun FeedTopBar(
     isConnected: Boolean,
     isFeedRunning: Boolean,
+    onToggle: () -> Unit,
 ) {
     TopAppBar(
         title = {
@@ -125,7 +129,7 @@ private fun FeedTopBar(
         },
         actions = {
             Button(
-                onClick = {},
+                onClick = onToggle,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (isFeedRunning)
                         MaterialTheme.colorScheme.error
@@ -249,6 +253,7 @@ fun FeedHomePreviewContent() {
     FeedScreenContent(
         uiState = PreviewFeedUiState,
         onSymbolClick = {},
+        onToggleFeed = {},
     )
 }
 
@@ -267,6 +272,7 @@ private fun FeedScreenEmptyPreview() {
         FeedScreenContent(
             uiState = FeedUiState(),
             onSymbolClick = {},
+            onToggleFeed = {},
         )
     }
 }
@@ -278,6 +284,7 @@ private fun FeedScreenDarkPreview() {
         FeedScreenContent(
             uiState = PreviewFeedUiState,
             onSymbolClick = {},
+            onToggleFeed = {},
         )
     }
 }
