@@ -33,6 +33,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
 import com.waiphyo.marketflow.R
+import com.waiphyo.marketflow.ui.detail.DetailScreen
 import com.waiphyo.marketflow.ui.feed.FeedHomePreviewContent
 import com.waiphyo.marketflow.ui.feed.FeedScreen
 import com.waiphyo.marketflow.ui.theme.PriceTrackerTheme
@@ -140,8 +141,9 @@ fun AppNavigation(navController: NavHostController) {
                     navDeepLink { uriPattern = "stocks://symbol/{${NavArgs.SYMBOL}}" },
                 ),
             ) {
-                val symbol = it.arguments?.getString(NavArgs.SYMBOL).orEmpty()
-                PlaceholderScreen(title = "Detail: $symbol", paddingValues = innerPadding)
+                DetailScreen(
+                    onNavigateUp = { navController.navigateUp() }
+                )
             }
         }
     }
