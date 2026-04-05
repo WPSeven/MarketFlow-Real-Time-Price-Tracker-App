@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -99,8 +100,8 @@ private fun DetailContent(
     modifier: Modifier = Modifier,
 ) {
     val flashTarget = when (stock.flashState) {
-        FlashState.UP   -> Color(0x3300C853)
-        FlashState.DOWN -> Color(0x33FF1744)
+        FlashState.UP   -> Color(0x4000C853)
+        FlashState.DOWN -> Color(0x41FF1744)
         FlashState.NONE -> Color.Transparent
     }
     val flashColor by animateColorAsState(
@@ -117,10 +118,11 @@ private fun DetailContent(
     ) {
 
         // ── Price card ────────────────────────────────────────────────────────
+        val surfaceVariant = MaterialTheme.colorScheme.surfaceVariant
+        val cardColor = if (stock.flashState == FlashState.NONE) surfaceVariant else flashColor
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = flashColor.takeIf { it != Color.Transparent }
-                ?: MaterialTheme.colorScheme.surfaceVariant),
+            colors = CardDefaults.cardColors(containerColor = cardColor.compositeOver(MaterialTheme.colorScheme.surface)),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         ) {
             Column(modifier = Modifier.padding(20.dp)) {

@@ -3,6 +3,7 @@
 package com.waiphyo.marketflow.ui.feed
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -194,6 +195,33 @@ private fun StockRow(
         label = "flash_${stock.symbol}",
     )
 
+    val animatedDisplayPrice by animateFloatAsState(
+        targetValue = stock.price.toFloat(),
+        animationSpec = tween(durationMillis = 260),
+        label = "price_counter_${stock.symbol}",
+    )
+
+    val upColor = Color(0xFF4CAF50)
+    val downColor = Color(0xFFF44336)
+    val animatedPriceColor by animateColorAsState(
+        targetValue = when (stock.flashState) {
+            FlashState.UP -> upColor
+            FlashState.DOWN -> downColor
+            FlashState.NONE -> MaterialTheme.colorScheme.onSurface
+        },
+        animationSpec = tween(durationMillis = 220),
+        label = "price_color_${stock.symbol}",
+    )
+    val animatedChangeColor by animateColorAsState(
+        targetValue = when (stock.flashState) {
+            FlashState.UP -> upColor
+            FlashState.DOWN -> downColor
+            FlashState.NONE -> if (stock.isUp) upColor else downColor
+        },
+        animationSpec = tween(durationMillis = 220),
+        label = "change_color_${stock.symbol}",
+    )
+
     Surface(
         color = flashColor,
         modifier = Modifier
@@ -222,16 +250,19 @@ private fun StockRow(
             }
 
             // Right: price + indicator
-            Column(horizontalAlignment = Alignment.End) {
+            Column(
+                horizontalAlignment = Alignment.End,
+            ) {
                 Text(
-                    text = "$${String.format(Locale.US, "%.2f", stock.price)}",
+                    text = "$${String.format(Locale.US, "%.2f", animatedDisplayPrice)}",
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold,
+                    color = animatedPriceColor,
                 )
                 Text(
                     text = "${stock.changeIndicator} ${String.format(Locale.US, "%.2f", kotlin.math.abs(stock.priceChange))}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = if (stock.isUp) Color(0xFF4CAF50) else Color(0xFFF44336),
+                    color = animatedChangeColor,
                     fontWeight = FontWeight.Medium,
                 )
             }
