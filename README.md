@@ -10,7 +10,9 @@ A real-time stock price tracker for Android built with Jetpack Compose, WebSocke
 |:---:|:---:|:---:|:---:|
 | ![Feed Light](https://github.com/user-attachments/assets/931692f9-d68f-41d7-ab80-457846a96731) | ![Feed Dark](https://github.com/user-attachments/assets/70dcb4a0-a22a-467c-ab31-c71bc92c4a8c) | ![Detail](https://github.com/user-attachments/assets/3007e903-5003-49ba-a89f-222b1a46487f) | ![Account](https://github.com/user-attachments/assets/f3e7734b-cdaa-4cf2-843e-4ae8d7ed2235) |
 
-> **Demo video:** [docs/demo.mp4](docs/demo.mp4)
+## Demo
+
+https://github.com/user-attachments/assets/887d8465-8603-4869-9e4f-466b7affb4bd
 
 ---
 
